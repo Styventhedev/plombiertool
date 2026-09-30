@@ -1,0 +1,8 @@
+{
+  "appId": "fr.plombiertool.app",
+  "appName": "PlombierTool",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

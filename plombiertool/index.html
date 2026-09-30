@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PlombierTool</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="application-name" content="PlombierTool">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PlombierTool">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Boîte à outils numérique pour plombiers, chauffagistes et apprentis CAP MIT">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ÉCRAN DE CHARGEMENT -->
+<div id="splash">
+  <div class="splash-logo">🔧</div>
+  <div class="splash-title">PlombierTool</div>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- MENU LATÉRAL (visible uniquement sur PC / grand écran) -->
+<nav class="sidebar-nav" id="sidebarNav">
+  <div class="sidebar-logo"><span>🔧</span> PlombierTool</div>
+  <button class="sidebar-btn" data-screen="screen-dashboard"><span class="icon">🏠</span>Accueil</button>
+  <button class="sidebar-btn" data-screen="screen-hydraulique"><span class="icon">💧</span>Calculs hydrauliques</button>
+  <button class="sidebar-btn" data-screen="screen-chauffage"><span class="icon">🔥</span>Chauffage</button>
+  <button class="sidebar-btn" data-screen="screen-mesures"><span class="icon">📐</span>Mesures &amp; conversions</button>
+  <button class="sidebar-btn" data-screen="screen-tubes"><span class="icon">🔩</span>Tubes &amp; raccords</button>
+  <button class="sidebar-btn" data-screen="screen-devis"><span class="icon">📝</span>Devis</button>
+  <button class="sidebar-btn" data-screen="screen-interventions"><span class="icon">🛠️</span>Interventions</button>
+  <button class="sidebar-btn" data-screen="screen-checklist"><span class="icon">🧰</span>Checklist chantier</button>
+  <button class="sidebar-btn" data-screen="screen-fiches"><span class="icon">📋</span>Fiches chantier</button>
+  <button class="sidebar-btn" data-screen="screen-parametres"><span class="icon">⚙️</span>Paramètres</button>
+</nav>
+
+<div class="app-shell">
+
+<!-- EN-TÊTE -->
+<header class="app-header">
+  <button id="btnBack" class="btn-icon" aria-label="Retour" hidden>←</button>
+  <h1 id="pageTitle">PlombierTool</h1>
+  <span id="offlineBadge" class="badge-offline" hidden>Hors ligne</span>
+  <button id="installAppButton" class="install-app-button" type="button" aria-label="Télécharger PlombierTool" title="Télécharger l’application PlombierTool" hidden>
+    <span aria-hidden="true">⇩</span> Télécharger l’app
+  </button>
+</header>
+
+<dialog id="appDownloadDialog" class="app-download-dialog" aria-labelledby="app-download-title">
+  <div class="app-download-content">
+    <h2 id="app-download-title">Télécharger PlombierTool</h2>
+    <p id="app-download-message" class="muted"></p>
+    <a id="downloadAndroidApp" class="btn-secondary btn-block" hidden>Télécharger pour Android (.apk)</a>
+    <a id="downloadWindowsApp" class="btn-secondary btn-block" hidden>Télécharger pour Windows (.exe)</a>
+    <button id="installPwaButton" class="btn-primary btn-block" type="button" hidden>Installer depuis le navigateur</button>
+    <p id="pwa-install-hint" class="muted small"></p>
+    <button id="closeAppDownloadDialog" class="btn-ghost btn-block" type="button">Fermer</button>
+  </div>
+</dialog>
+
+<main id="app">
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section id="screen-dashboard" class="screen active">
+    <div class="dashboard-grid">
+      <button class="card-nav" data-screen="screen-hydraulique">
+        <span class="card-icon">💧</span>
+        <span class="card-label">Calculs hydrauliques</span>
+      </button>
+      <button class="card-nav" data-screen="screen-chauffage">
+        <span class="card-icon">🔥</span>
+        <span class="card-label">Chauffage</span>
+      </button>
+      <button class="card-nav" data-screen="screen-mesures">
+        <span class="card-icon">📐</span>
+        <span class="card-label">Mesures &amp; conversions</span>
+      </button>
+      <button class="card-nav" data-screen="screen-tubes">
+        <span class="card-icon">🔩</span>
+        <span class="card-label">Tubes &amp; raccords</span>
+      </button>
+      <button class="card-nav" data-screen="screen-devis">
+        <span class="card-icon">📝</span>
+        <span class="card-label">Devis</span>
+      </button>
+      <button class="card-nav" data-screen="screen-interventions">
+        <span class="card-icon">🛠️</span>
+        <span class="card-label">Interventions</span>
+      </button>
+      <button class="card-nav" data-screen="screen-checklist">
+        <span class="card-icon">🧰</span>
+        <span class="card-label">Checklist chantier</span>
+      </button>
+      <button class="card-nav" data-screen="screen-fiches">
+        <span class="card-icon">📋</span>
+        <span class="card-label">Fiches chantier</span>
+      </button>
+      <button class="card-nav" data-screen="screen-parametres">
+        <span class="card-icon">⚙️</span>
+        <span class="card-label">Paramètres</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== HYDRAULIQUE ===================== -->
+  <section id="screen-hydraulique" class="screen">
+    <div class="tool-list" id="hydro-list"></div>
+    <div id="hydro-detail" class="tool-detail" hidden></div>
+  </section>
+
+  <!-- ===================== CHAUFFAGE ===================== -->
+  <section id="screen-chauffage" class="screen">
+    <div class="tool-list" id="chauffage-list"></div>
+    <div id="chauffage-detail" class="tool-detail" hidden></div>
+  </section>
+
+  <!-- ===================== MESURES ===================== -->
+  <section id="screen-mesures" class="screen">
+    <div class="tool-list" id="mesures-list"></div>
+    <div id="mesures-detail" class="tool-detail" hidden></div>
+  </section>
+
+  <!-- ===================== TUBES & RACCORDS ===================== -->
+  <section id="screen-tubes" class="screen">
+    <div class="tubes-tabs" id="tubes-tabs"></div>
+    <input type="search" id="tubes-search" class="input-field" placeholder="Rechercher un diamètre (ex: 16, 1/2, DN20)...">
+    <div class="card-grid" id="tubes-results"></div>
+  </section>
+
+  <!-- ===================== DEVIS ===================== -->
+  <section id="screen-devis" class="screen">
+    <div class="form-block">
+      <h2>Informations client</h2>
+      <label>Nom du client</label>
+      <input type="text" id="devis-client" class="input-field">
+      <label>Adresse</label>
+      <input type="text" id="devis-adresse" class="input-field">
+      <label>Description des travaux</label>
+      <textarea id="devis-description" class="input-field" rows="2"></textarea>
+    </div>
+
+    <div class="form-block">
+      <div class="row-between">
+        <h2>Lignes de matériel / main-d'œuvre</h2>
+        <button id="devis-add-line" class="btn-secondary">+ Ligne</button>
+      </div>
+      <div id="devis-lines"></div>
+    </div>
+
+    <div class="form-block">
+      <label>TVA (%)</label>
+      <input type="number" id="devis-tva" class="input-field" value="10" step="0.1">
+      <div class="devis-totaux">
+        <div class="total-line"><span>Total HT</span><span id="devis-total-ht">0,00 €</span></div>
+        <div class="total-line"><span>TVA</span><span id="devis-total-tva">0,00 €</span></div>
+        <div class="total-line total-ttc"><span>Total TTC</span><span id="devis-total-ttc">0,00 €</span></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="devis-save" class="btn-primary">💾 Enregistrer</button>
+      <button id="devis-print" class="btn-secondary">🖨️ Imprimer / PDF</button>
+      <button id="devis-new" class="btn-ghost">Nouveau devis</button>
+    </div>
+
+    <h2>Devis enregistrés</h2>
+    <div id="devis-saved-list" class="tool-list"></div>
+  </section>
+
+  <!-- ===================== CHECKLIST ===================== -->
+  <section id="screen-checklist" class="screen">
+    <div class="row-between">
+      <select id="checklist-select" class="input-field"></select>
+      <button id="checklist-new" class="btn-secondary">+ Liste</button>
+    </div>
+    <div id="checklist-items"></div>
+    <div class="btn-row">
+      <input type="text" id="checklist-new-item" class="input-field" placeholder="Ajouter un élément...">
+      <button id="checklist-add-item" class="btn-primary">Ajouter</button>
+    </div>
+    <button id="checklist-delete" class="btn-ghost btn-danger">Supprimer cette liste</button>
+  </section>
+
+  <!-- ===================== FICHES CHANTIER ===================== -->
+  <section id="screen-fiches" class="screen">
+    <div id="fiches-liste"></div>
+    <button id="fiches-new" class="btn-primary btn-block">+ Nouvelle fiche chantier</button>
+  </section>
+
+  <!-- ===================== INTERVENTIONS ===================== -->
+  <section id="screen-interventions" class="screen">
+    <div class="intervention-list-toolbar">
+      <select id="intervention-history-client" class="input-field" aria-label="Filtrer l’historique par client">
+        <option value="">Tous les clients</option>
+      </select>
+      <button id="intervention-new" class="btn-primary">+ Nouvelle</button>
+    </div>
+    <h2 class="intervention-section-title">Historique des interventions</h2>
+    <div id="interventions-list" class="intervention-list"></div>
+  </section>
+
+  <section id="screen-intervention-detail" class="screen">
+    <div class="intervention-detail-heading">
+      <div>
+        <h2 id="intervention-detail-title">Nouvelle intervention</h2>
+        <p id="intervention-save-state" class="muted small" role="status">Nouveau brouillon</p>
+      </div>
+      <button id="intervention-new-from-detail" class="btn-secondary">+ Nouvelle</button>
+    </div>
+
+    <div id="intervention-form">
+      <div class="form-block">
+        <h2>Client et rendez-vous</h2>
+        <label for="intervention-client">Client</label>
+        <div class="intervention-client-row">
+          <select id="intervention-client" class="input-field">
+            <option value="">Choisir un client…</option>
+          </select>
+          <button id="intervention-add-client" type="button" class="btn-secondary">+ Client</button>
+        </div>
+        <div id="new-client-form" class="new-client-form" hidden>
+          <label for="new-client-name">Nom du client</label>
+          <input id="new-client-name" class="input-field" type="text" autocomplete="name">
+          <label for="new-client-phone">Téléphone</label>
+          <input id="new-client-phone" class="input-field" type="tel" autocomplete="tel">
+          <label for="new-client-address">Adresse</label>
+          <input id="new-client-address" class="input-field" type="text" autocomplete="street-address">
+          <div class="btn-row">
+            <button id="new-client-save" type="button" class="btn-primary">Enregistrer le client</button>
+            <button id="new-client-cancel" type="button" class="btn-ghost">Annuler</button>
+          </div>
+        </div>
+        <label for="intervention-datetime">Date et heure</label>
+        <input id="intervention-datetime" class="input-field" type="datetime-local">
+        <div class="intervention-two-columns">
+          <div>
+            <label for="intervention-type">Type d’intervention</label>
+            <select id="intervention-type" class="input-field">
+              <option>Dépannage</option>
+              <option>Installation</option>
+              <option>Entretien</option>
+              <option>Réparation</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div>
+            <label for="intervention-status">Statut</label>
+            <select id="intervention-status" class="input-field">
+              <option value="todo">À faire</option>
+              <option value="wip">En cours</option>
+              <option value="done">Terminé</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <label for="intervention-description">Description des travaux</label>
+        <textarea id="intervention-description" class="input-field" rows="4" placeholder="Constat, diagnostic et travaux réalisés…"></textarea>
+      </div>
+
+      <div class="form-block">
+        <div class="row-between intervention-block-heading">
+          <h2>Matériel utilisé</h2>
+          <button id="intervention-add-material" type="button" class="btn-secondary">+ Ligne</button>
+        </div>
+        <div class="intervention-material-labels" aria-hidden="true"><span>Désignation</span><span>Qté</span><span>Prix unit.</span><span></span></div>
+        <div id="intervention-materials"></div>
+        <div class="intervention-total-line"><span>Total matériel</span><strong id="intervention-total">0,00 €</strong></div>
+      </div>
+
+      <div class="form-block">
+        <label for="intervention-notes">Notes techniques</label>
+        <textarea id="intervention-notes" class="input-field" rows="3" placeholder="Références, mesures, recommandations…"></textarea>
+      </div>
+
+      <div class="form-block">
+        <div class="row-between intervention-block-heading">
+          <h2>Photos du chantier</h2>
+          <label for="intervention-photo-input" class="btn-secondary photo-upload-button">📷 Ajouter</label>
+          <input id="intervention-photo-input" class="photo-input" type="file" accept="image/*" multiple>
+        </div>
+        <div id="intervention-photos" class="intervention-photo-gallery"></div>
+      </div>
+
+      <div class="form-block">
+        <div class="row-between intervention-block-heading">
+          <h2>Signature du client</h2>
+          <button id="intervention-signature-clear" type="button" class="btn-ghost">Effacer</button>
+        </div>
+        <canvas id="intervention-signature" class="intervention-signature" aria-label="Zone de signature du client"></canvas>
+      </div>
+    </div>
+
+    <div class="intervention-actions">
+      <button id="intervention-save" class="btn-primary">💾 Enregistrer le brouillon</button>
+      <button id="intervention-report" class="btn-secondary">Compte-rendu / PDF</button>
+      <button id="intervention-delete" class="btn-ghost btn-danger" hidden>Supprimer</button>
+    </div>
+  </section>
+
+  <section id="screen-fiche-detail" class="screen">
+    <div class="form-block">
+      <label>Client</label>
+      <input type="text" id="fiche-client" class="input-field">
+      <label>Adresse</label>
+      <input type="text" id="fiche-adresse" class="input-field">
+      <label>Date</label>
+      <input type="date" id="fiche-date" class="input-field">
+      <label>Description</label>
+      <textarea id="fiche-description" class="input-field" rows="2"></textarea>
+      <label>Travaux réalisés</label>
+      <textarea id="fiche-travaux" class="input-field" rows="2"></textarea>
+      <label>Matériel utilisé</label>
+      <textarea id="fiche-materiel" class="input-field" rows="2"></textarea>
+      <label>Notes</label>
+      <textarea id="fiche-notes" class="input-field" rows="2"></textarea>
+      <label>Statut</label>
+      <select id="fiche-statut" class="input-field">
+        <option value="todo">🟡 À faire</option>
+        <option value="wip">🔵 En cours</option>
+        <option value="done">🟢 Terminé</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button id="fiche-save" class="btn-primary">💾 Enregistrer</button>
+      <button id="fiche-delete" class="btn-ghost btn-danger">Supprimer</button>
+    </div>
+  </section>
+
+  <!-- ===================== PARAMÈTRES ===================== -->
+  <section id="screen-parametres" class="screen">
+    <div class="form-block" id="account-section">
+
+      <div id="account-logged-out" hidden>
+        <p class="muted">Crée un compte pour retrouver tes devis, checklists et fiches chantier même après un changement d'appareil.</p>
+        <label>E-mail</label>
+        <input type="email" id="account-email" class="input-field" autocomplete="email">
+        <label>Mot de passe</label>
+        <input type="password" id="account-password" class="input-field" autocomplete="current-password">
+        <div class="btn-row">
+          <button id="account-login" class="btn-secondary">Se connecter</button>
+          <button id="account-signup" class="btn-primary">Créer un compte</button>
+        </div>
+      </div>
+
+      <div id="account-logged-in" hidden>
+        <p class="muted">Connecté en tant que <strong id="account-email-display"></strong></p>
+        <p class="muted small">Tes devis, checklists et fiches sont sauvegardés en ligne automatiquement.</p>
+        <button id="account-logout" class="btn-ghost btn-block">Se déconnecter</button>
+      </div>
+
+      <p class="muted small" id="account-message"></p>
+    </div>
+    <div class="form-block">
+      <div class="row-between">
+        <label for="setting-theme">Thème sombre</label>
+        <input type="checkbox" id="setting-theme" class="switch" checked>
+      </div>
+      <div class="row-between">
+        <label for="setting-units">Unités métriques</label>
+        <input type="checkbox" id="setting-units" class="switch" checked disabled>
+      </div>
+    </div>
+    <div class="form-block">
+      <h2>Données locales</h2>
+      <p class="muted">Toutes les données (devis, checklists, fiches) sont stockées sur cet appareil (localStorage), et aussi en ligne si tu es connecté à un compte ci-dessus.</p>
+      <button id="btn-export-data" class="btn-secondary btn-block">⬇️ Exporter mes données (JSON)</button>
+      <button id="btn-clear-data" class="btn-ghost btn-danger btn-block">🗑️ Supprimer toutes les données</button>
+    </div>
+    <div class="form-block">
+      <h2>À propos</h2>
+      <p class="muted">PlombierTool — Boîte à outils pour plombiers, chauffagistes, apprentis et élèves CAP MIT.</p>
+      <p class="muted">Version <span id="app-version"></span></p>
+      <p class="muted small">⚠️ Les calculs fournis sont des outils d'aide et d'estimation. Ils ne remplacent pas les DTU, normes en vigueur, données constructeur ni le jugement d'un professionnel qualifié.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- NAVIGATION MOBILE -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-screen="screen-dashboard"><span>🏠</span>Accueil</button>
+  <button class="nav-btn" data-screen="screen-devis"><span>📝</span>Devis</button>
+  <button class="nav-btn" data-screen="screen-interventions"><span>🛠️</span>Intervention</button>
+  <button class="nav-btn" data-screen="screen-checklist"><span>🧰</span>Checklist</button>
+  <button class="nav-btn" data-screen="screen-fiches"><span>📋</span>Fiches</button>
+  <button class="nav-btn" data-screen="screen-parametres"><span>⚙️</span>Réglages</button>
+</nav>
+
+</div><!-- /.app-shell -->
+
+<!-- Firebase n'est chargé que si une configuration valide est renseignée. -->
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-loader.js"></script>
+
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+<script src="js/hydraulique.js"></script>
+<script src="js/chauffage.js"></script>
+<script src="js/mesures.js"></script>
+<script src="js/tubes.js"></script>
+<script src="js/devis.js"></script>
+<script src="js/checklist.js"></script>
+<script src="js/fiches.js"></script>
+<script src="js/interventions.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

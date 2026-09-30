@@ -1,0 +1,48 @@
+{
+  "name": "plombiertool",
+  "version": "1.0.0",
+  "description": "Boîte à outils numérique pour plombiers, chauffagistes, apprentis et élèves CAP MIT",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "node server.js",
+    "build:web": "node scripts/build-web.js",
+    "desktop": "electron .",
+    "dist:windows": "electron-builder --win nsis",
+    "android:sync": "npm run build:web && cap sync android"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "fr.plombiertool.desktop",
+    "productName": "PlombierTool",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "index.html",
+      "manifest.json",
+      "css/**/*",
+      "icons/**/*",
+      "js/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "PlombierTool-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
